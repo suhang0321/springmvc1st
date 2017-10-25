@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suhang.springmvc.mapper.ItemsMapper">
+    <sql id="query_items_by_name">
+        <if test="itemsCustomer!= null">
+              <if test="itemsCustomer.name!=null and itemsCustomer.name!=''">
+                  items.`name` LIKE '%${itemsCustomer.name}%'
+              </if>
+          </if>
+    </sql>
+
+    <select id="findItemsList" parameterType="com.suhang.springmvc.po.ItemsCustomerVo"
+            resultType="com.suhang.springmvc.po.ItemsCustomer">
+          SELECT * FROM items
+          <where>
+              <include refid="query_items_by_name"></include>
+          </where>
+    </select>
+    <select id="findItemsById" parameterType="Integer" resultType="com.suhang.springmvc.po.ItemsCustomer">
+        SELECT items.*FROM items WHERE id  =#{id}
+    </select>
+    <update id="updateItems" parameterType="com.suhang.springmvc.po.ItemsCustomer"  >
+        UPDATE items SET items.`name`=#{name},items.`price`=#{price},items.`detail`=#{detail},
+      items.pic=#{pic},items.`creativetime`=#{creativetime} WHERE id =#{id}
+  </update>
+    <delete id="deleteItems" parameterType="Integer[]">
+        DELETE FROM items WHERE id IN
+      <foreach collection="array" item="id" open="(" close=")" separator=",">
+             #{id}
+      </foreach>
+    </delete>
+   <update id="updateItemsList" parameterType="java.util.List">
+       <foreach collection="list" item="single" index="index" open="" close="" separator=";">
+           UPDATE items
+           <set>
+               items.`name`=#{single.name},items.`price`=#{single.price},items.`detail`=#{single.detail},
+               items.pic=#{single.pic},items.`creativetime`=#{single.creativetime}
+           </set>
+          WHERE id =#{single.id}
+       </foreach>
+   </update>
+
+</mapper>
